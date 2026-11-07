@@ -1,0 +1,174 @@
+// BeautySaaS — платформа б'юті-майстрів та TFP-пропозицій.
+// PostgreSQL (Supabase). Міграції йдуть через DIRECT_URL, запити застосунку — через DATABASE_URL (pooler).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  PRO_MASTER
+}
+
+enum ProfileType {
+  INDIVIDUAL
+  STUDIO
+}
+
+enum GridLayout {
+  INSTAGRAM_GRID
+  THREADS_FEED
+}
+
+enum PostType {
+  TFP
+  PROMO
+  GIVEAWAY
+  NEW_ITEM
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model User {
+  id            String  @id @default(uuid()) @db.Uuid
+  email         String  @unique
+  name          String?
+  avatar        String?
+  role          Role    @default(USER)
+  bio           String? @db.Text
+  instagramLink String?
+
+  masterProfile MasterProfile?
+  bookings      Booking[]
+  subscriptions Subscription[]
+  bookmarks     Bookmark[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model MasterProfile {
+  id          String      @id @default(uuid()) @db.Uuid
+  userId      String      @unique @db.Uuid
+  profileType ProfileType
+  gridLayout  GridLayout  @default(INSTAGRAM_GRID)
+  location    String?
+  rating      Decimal     @default(0) @db.Decimal(3, 2)
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  services      Service[]
+  posts         Post[]
+  bookings      Booking[]
+  subscriptions Subscription[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileType])
+  @@index([location])
+  @@map("master_profiles")
+}
+
+model Service {
+  id              String  @id @default(uuid()) @db.Uuid
+  masterProfileId String  @db.Uuid
+  title           String
+  durationMinutes Int
+  price           Decimal @db.Decimal(10, 2)
+  isTfp           Boolean @default(false)
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  bookings      Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([masterProfileId])
+  @@index([masterProfileId, isTfp])
+  @@map("services")
+}
+
+model Post {
+  id              String   @id @default(uuid()) @db.Uuid
+  masterProfileId String   @db.Uuid
+  type            PostType
+  mediaUrls       String[] @default([])
+  title           String
+  content         String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  bookmarks     Bookmark[]
+
+  updatedAt DateTime @updatedAt
+
+  @@index([masterProfileId, createdAt])
+  @@index([type, createdAt])
+  @@map("posts")
+}
+
+model Booking {
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @db.Uuid
+  masterProfileId String        @db.Uuid
+  serviceId       String        @db.Uuid
+  dateTime        DateTime
+  status          BookingStatus @default(PENDING)
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  // NoAction перевіряється в кінці statement: каскад з профілю встигає прибрати бронь.
+  // Видалити послугу, поки на неї є броні, база не дозволить.
+  service       Service       @relation(fields: [serviceId], references: [id], onDelete: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, dateTime])
+  @@index([masterProfileId, dateTime])
+  @@index([serviceId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model Subscription {
+  id              String @id @default(uuid()) @db.Uuid
+  followerId      String @db.Uuid
+  masterProfileId String @db.Uuid
+
+  follower      User          @relation(fields: [followerId], references: [id], onDelete: Cascade)
+  masterProfile MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([followerId, masterProfileId])
+  @@index([masterProfileId])
+  @@map("subscriptions")
+}
+
+model Bookmark {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @db.Uuid
+  postId String @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@map("bookmarks")
+}

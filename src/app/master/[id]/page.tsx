@@ -5,7 +5,7 @@ import { MasterFeed, type MasterFeedPost } from "@/components/master/MasterFeed"
 import { samplePosts } from "@/lib/sample-feed";
 
 export const metadata: Metadata = {
-  title: "Профіль майстра · BeautySaaS",
+  title: "Профіль майстра · TFP-Bundle",
 };
 
 const gallery: Array<

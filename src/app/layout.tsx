@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BeautySaaS",
-  description: "Стрічка б'юті-майстрів, TFP-пропозиції та запис на послуги.",
+  title: "TFP-Bundle",
+  description: "Стрічка TFP, бартеру та оголошень: краса, зйомка і локальні пропозиції.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

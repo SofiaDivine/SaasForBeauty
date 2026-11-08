@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Мій профіль · BeautySaaS",
+  title: "Мій профіль · TFP-Bundle",
 };
 
 const tabs = [

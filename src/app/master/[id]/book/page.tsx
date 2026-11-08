@@ -6,7 +6,7 @@ import type { BookingService } from "@/lib/booking";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "Запис · BeautySaaS",
+  title: "Запис · TFP-Bundle",
 };
 
 const previewServices: BookingService[] = [

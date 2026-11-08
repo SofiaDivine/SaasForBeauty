@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
-  title: "Вхід · BeautySaaS",
+  title: "Вхід · TFP-Bundle",
 };
 
 export default function LoginPage() {

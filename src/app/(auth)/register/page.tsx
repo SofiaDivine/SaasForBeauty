@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
-  title: "Реєстрація · BeautySaaS",
+  title: "Реєстрація · TFP-Bundle",
 };
 
 export default function RegisterPage() {

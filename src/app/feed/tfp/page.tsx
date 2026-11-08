@@ -3,7 +3,7 @@ import Link from "next/link";
 import { samplePosts } from "@/lib/sample-feed";
 
 export const metadata: Metadata = {
-  title: "TFP · BeautySaaS",
+  title: "TFP · TFP-Bundle",
 };
 
 export default function TfpFeedPage() {

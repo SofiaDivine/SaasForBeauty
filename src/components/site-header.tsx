@@ -12,7 +12,7 @@ export function SiteHeader() {
     <header className="border-b border-stone-200 bg-white">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="text-sm font-semibold tracking-tight">
-          BeautySaaS
+          TFP-Bundle
         </Link>
         <nav className="flex flex-wrap items-center gap-4 text-sm text-stone-600">
           {links.map((link) => (

@@ -1,4 +1,14 @@
-export type FeedCategory = "PHOTO" | "MAKEUP" | "MANICURE" | "VIDEO";
+export type FeedCategory =
+  | "PHOTO"
+  | "MAKEUP"
+  | "MANICURE"
+  | "VIDEO"
+  | "FASHION"
+  | "PETS"
+  | "CAFE"
+  | "CRAFT";
+
+export type FeedArea = "BEAUTY" | "SHOOT" | "OTHER";
 
 export const feedCategories: Array<{ id: FeedCategory; label: string }> = [
   { id: "PHOTO", label: "Фото" },
@@ -6,6 +16,39 @@ export const feedCategories: Array<{ id: FeedCategory; label: string }> = [
   { id: "MANICURE", label: "Манікюр" },
   { id: "VIDEO", label: "Відео" },
 ];
+
+export const feedAreas: Array<{ id: FeedArea; label: string; hint: string }> = [
+  {
+    id: "BEAUTY",
+    label: "Краса та мода",
+    hint: "Б'юті-послуги та бренди одягу",
+  },
+  {
+    id: "SHOOT",
+    label: "Зйомка",
+    hint: "Фотографи та відеографи",
+  },
+  {
+    id: "OTHER",
+    label: "Інше",
+    hint: "Тварини, заклади та рукоділля",
+  },
+];
+
+const areaByCategory: Record<FeedCategory, FeedArea> = {
+  PHOTO: "SHOOT",
+  VIDEO: "SHOOT",
+  MAKEUP: "BEAUTY",
+  MANICURE: "BEAUTY",
+  FASHION: "BEAUTY",
+  PETS: "OTHER",
+  CAFE: "OTHER",
+  CRAFT: "OTHER",
+};
+
+export function areaOf(category: FeedCategory): FeedArea {
+  return areaByCategory[category];
+}
 
 export type FeedPost = {
   id: string;
@@ -24,6 +67,11 @@ const lens = "00000000-0000-4000-8000-000000000001";
 const maria = "00000000-0000-4000-8000-000000000002";
 const nude = "00000000-0000-4000-8000-000000000003";
 const frame = "00000000-0000-4000-8000-000000000004";
+const veil = "00000000-0000-4000-8000-000000000006";
+const linen = "00000000-0000-4000-8000-000000000007";
+const paw = "00000000-0000-4000-8000-000000000008";
+const cup = "00000000-0000-4000-8000-000000000009";
+const thread = "00000000-0000-4000-8000-000000000010";
 
 function photo(id: number) {
   return `https://picsum.photos/id/${id}/800/800`;
@@ -205,6 +253,268 @@ export const samplePosts: FeedPost[] = [
     location: "Київ",
     mediaUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
     mediaKind: "video",
+  },
+  {
+    id: "tfp-wedding",
+    type: "TFP",
+    category: "MAKEUP",
+    title: "Проба весільного макіяжу",
+    content: "Шукаю наречену на пробний образ: шкіра, стрілки і пучок. Фото віддаю обом.",
+    masterName: "Ательє Вуаль",
+    masterId: veil,
+    location: "Київ",
+    mediaUrl: photo(1027),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-autumn",
+    type: "TFP",
+    category: "PHOTO",
+    title: "Творча осіння зйомка",
+    content: "Парк, пальто і тепле світло. Шукаю модель на серію з осіннім кольором.",
+    masterName: "Студія Лінза",
+    masterId: lens,
+    location: "Львів",
+    mediaUrl: photo(1011),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-maternity",
+    type: "TFP",
+    category: "PHOTO",
+    title: "Зйомка для вагітних",
+    content: "Ніжна студійна серія: живіт, руки, тканина. Образ і ретуш входять у TFP.",
+    masterName: "Frame Studio",
+    masterId: frame,
+    location: "Одеса",
+    mediaUrl: photo(1016),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-couple",
+    type: "TFP",
+    category: "PHOTO",
+    title: "Зйомка для сімейних пар",
+    content: "Побутова історія вдома або на прогулянці. Два образи, кадри отримують обоє.",
+    masterName: "Марія Коваль",
+    masterId: maria,
+    location: "Дніпро",
+    mediaUrl: photo(1015),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-brand",
+    type: "TFP",
+    category: "FASHION",
+    title: "Новий бренд одягу шукає бартер",
+    content: "Відкрили шоурум і шукаємо моделей на лукбук. Одяг залишається вам за зйомку.",
+    masterName: "Linen Atelier",
+    masterId: linen,
+    location: "Київ",
+    mediaUrl: photo(1033),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-groom",
+    type: "TFP",
+    category: "PETS",
+    title: "Грумінг за відмітку",
+    content: "Нова локація: шукаю собак малих порід. Стрижка за відмітку і кілька фото.",
+    masterName: "Лапа & Бант",
+    masterId: paw,
+    location: "Харків",
+    mediaUrl: photo(1025),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-couple-video",
+    type: "TFP",
+    category: "VIDEO",
+    title: "Відеоісторія для пари",
+    content: "Короткий ролик про прогулянку. Монтаж віддаю обом, без оплати зйомки.",
+    masterName: "Frame Studio",
+    masterId: frame,
+    location: "Київ",
+    mediaUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    mediaKind: "video",
+  },
+  {
+    id: "tfp-nails-wedding",
+    type: "TFP",
+    category: "MANICURE",
+    title: "Макро весільних нігтів",
+    content: "Шукаю руки на серію нюдового френча. Покриття за кадри для портфоліо.",
+    masterName: "Nude Room",
+    masterId: nude,
+    location: "Одеса",
+    mediaUrl: photo(106),
+    mediaKind: "image",
+  },
+  {
+    id: "tfp-craft",
+    type: "TFP",
+    category: "CRAFT",
+    title: "Зйомка прикрас за виріб",
+    content: "Шукаю модель з коротким волоссям. Сережки залишаються вам за кадри для магазину.",
+    masterName: "Нитка",
+    masterId: thread,
+    location: "Івано-Франківськ",
+    mediaUrl: photo(1074),
+    mediaKind: "image",
+  },
+  {
+    id: "promo-wedding-trial",
+    type: "PROMO",
+    category: "MAKEUP",
+    title: "Проба весільного образу −15%",
+    content: "Макіяж і укладка в будні. Пробний образ можна перенести на дату свята.",
+    masterName: "Ательє Вуаль",
+    masterId: veil,
+    location: "Київ",
+    mediaUrl: photo(996),
+    mediaKind: "image",
+  },
+  {
+    id: "promo-wedding-nails",
+    type: "PROMO",
+    category: "MANICURE",
+    title: "Весільний манікюр −20%",
+    content: "Прозорий френч і догляд кутикули для пробного образу цього місяця.",
+    masterName: "Nude Room",
+    masterId: nude,
+    location: "Одеса",
+    mediaUrl: photo(1003),
+    mediaKind: "image",
+  },
+  {
+    id: "promo-maternity",
+    type: "PROMO",
+    category: "PHOTO",
+    title: "Портрет для вагітних −15%",
+    content: "Студійна година в будні до обіду. Два образи входять у акційну ціну.",
+    masterName: "Frame Studio",
+    masterId: frame,
+    location: "Одеса",
+    mediaUrl: photo(1016),
+    mediaKind: "image",
+  },
+  {
+    id: "promo-cafe",
+    type: "PROMO",
+    category: "CAFE",
+    title: "Нові десерти в кав'ярні",
+    content: "Відкрились цього місяця. Осіннє меню: груша, гарбуз і какао. Дегустаційний сет дешевше.",
+    masterName: "Чорна філіжанка",
+    masterId: cup,
+    location: "Вінниця",
+    mediaUrl: photo(106),
+    mediaKind: "image",
+  },
+  {
+    id: "promo-brand",
+    type: "PROMO",
+    category: "FASHION",
+    title: "Примірка нової колекції",
+    content: "Перші покупці шоуруму: −10% на жакет, якщо приходите цього тижня.",
+    masterName: "Linen Atelier",
+    masterId: linen,
+    location: "Львів",
+    mediaUrl: photo(1033),
+    mediaKind: "image",
+  },
+  {
+    id: "give-autumn",
+    type: "GIVEAWAY",
+    category: "PHOTO",
+    title: "Розіграш осінньої зйомки",
+    content: "Одна година в парку серед тих, хто збереже оголошення до неділі.",
+    masterName: "Студія Лінза",
+    masterId: lens,
+    location: "Львів",
+    mediaUrl: photo(996),
+    mediaKind: "image",
+  },
+  {
+    id: "give-groom",
+    type: "GIVEAWAY",
+    category: "PETS",
+    title: "Розіграш грумінгу",
+    content: "Одна стрижка для собаки малої породи серед відміток на нову локацію.",
+    masterName: "Лапа & Бант",
+    masterId: paw,
+    location: "Харків",
+    mediaUrl: photo(1025),
+    mediaKind: "image",
+  },
+  {
+    id: "give-cafe",
+    type: "GIVEAWAY",
+    category: "CAFE",
+    title: "Розіграш десертного сету",
+    content: "Один осінній сет серед тих, хто збереже оголошення кав'ярні.",
+    masterName: "Чорна філіжанка",
+    masterId: cup,
+    location: "Вінниця",
+  },
+  {
+    id: "give-video",
+    type: "GIVEAWAY",
+    category: "VIDEO",
+    title: "Розіграш короткого ролика",
+    content: "Один вертикальний ролик про послугу серед тих, хто збереже пост.",
+    masterName: "Frame Studio",
+    masterId: frame,
+    location: "Київ",
+    mediaUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+    mediaKind: "video",
+  },
+  {
+    id: "new-showroom",
+    type: "NEW_ITEM",
+    category: "FASHION",
+    title: "Шоурум локального бренду",
+    content: "Жакети і сукні вже на рейлах. Є слоти на примірку і бартерні зйомки.",
+    masterName: "Linen Atelier",
+    masterId: linen,
+    location: "Київ",
+    mediaUrl: photo(1003),
+    mediaKind: "image",
+  },
+  {
+    id: "new-cafe",
+    type: "NEW_ITEM",
+    category: "CAFE",
+    title: "Кав'ярня відкрила залу",
+    content: "Нова вітрина десертів і ранкова кава. Перший тиждень — дегустація за записом.",
+    masterName: "Чорна філіжанка",
+    masterId: cup,
+    location: "Вінниця",
+    mediaUrl: photo(1011),
+    mediaKind: "image",
+  },
+  {
+    id: "new-craft",
+    type: "NEW_ITEM",
+    category: "CRAFT",
+    title: "Рукоділля: керамічні прикраси",
+    content: "Нова партія сережок і чокерів ручної роботи. Можна забрати в майстерні.",
+    masterName: "Нитка",
+    masterId: thread,
+    location: "Івано-Франківськ",
+    mediaUrl: photo(1074),
+    mediaKind: "image",
+  },
+  {
+    id: "new-groom",
+    type: "NEW_ITEM",
+    category: "PETS",
+    title: "Грумінг на новій локації",
+    content: "Відкрили кабінет біля парку. Є вікна на стрижку і фото після візиту.",
+    masterName: "Лапа & Бант",
+    masterId: paw,
+    location: "Харків",
+    mediaUrl: photo(1025),
+    mediaKind: "image",
   },
 ];
 

@@ -1,23 +1,86 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookingCalendar } from "@/components/booking/booking-calendar";
+import { Suspense } from "react";
+import { BookingCalendar } from "@/components/booking/BookingCalendar";
+import type { BookingService } from "@/lib/booking";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Запис · BeautySaaS",
 };
 
-const services = [
-  { id: "cut", title: "Стрижка", duration: "60 хв", price: "900 грн" },
-  { id: "color", title: "Фарбування", duration: "150 хв", price: "2 400 грн" },
-  { id: "tfp", title: "TFP-зйомка", duration: "120 хв", price: "Без оплати" },
+const previewServices: BookingService[] = [
+  {
+    id: "00000000-0000-4000-8000-000000000101",
+    title: "Стрижка",
+    durationMinutes: 60,
+    price: "900",
+    isTfp: false,
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000102",
+    title: "Фарбування",
+    durationMinutes: 150,
+    price: "2400",
+    isTfp: false,
+  },
+  {
+    id: "00000000-0000-4000-8000-000000000103",
+    title: "TFP-зйомка",
+    durationMinutes: 120,
+    price: "0",
+    isTfp: true,
+  },
 ];
 
-export default async function MasterBookingPage({
+function databaseIsRemote() {
+  const url = process.env.DATABASE_URL ?? "";
+  return url.length > 0 && !url.includes("localhost") && !url.includes("127.0.0.1");
+}
+
+async function loadServices(masterProfileId: string) {
+  if (!databaseIsRemote()) return previewServices;
+
+  const rows = await prisma.service.findMany({
+    where: { masterProfileId },
+    orderBy: { title: "asc" },
+    select: {
+      id: true,
+      title: true,
+      durationMinutes: true,
+      price: true,
+      isTfp: true,
+    },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    durationMinutes: row.durationMinutes,
+    price: row.price.toString(),
+    isTfp: row.isTfp,
+  }));
+}
+
+export default function MasterBookingPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<p className="px-4 py-8 text-sm text-stone-600">Завантажуємо календар…</p>}>
+      <BookingContent params={params} />
+    </Suspense>
+  );
+}
+
+async function BookingContent({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const services = await loadServices(id);
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8">
@@ -29,24 +92,11 @@ export default async function MasterBookingPage({
           До профілю
         </Link>
         <h1 className="text-3xl font-semibold tracking-tight">Запис</h1>
-        <p className="text-stone-600">Оберіть день, час і послугу майстра.</p>
+        <p className="text-stone-600">
+          Оберіть послугу, день і годину. Робочий час салону — 09:00–18:00.
+        </p>
       </header>
-      <BookingCalendar />
-      <section className="space-y-3">
-        <h2 className="text-sm font-semibold tracking-wide uppercase text-stone-500">
-          Послуги
-        </h2>
-        <ul className="grid gap-3 sm:grid-cols-3">
-          {services.map((service) => (
-            <li key={service.id} className="rounded-2xl border border-stone-200 bg-white p-4">
-              <p className="font-medium">{service.title}</p>
-              <p className="mt-1 text-sm text-stone-600">
-                {service.duration} · {service.price}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
+      <BookingCalendar masterProfileId={id} services={services} />
     </main>
   );
 }

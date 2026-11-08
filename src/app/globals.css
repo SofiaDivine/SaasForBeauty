@@ -24,3 +24,24 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.booking-calendar {
+  --rdp-accent-color: #1c1917;
+  --rdp-accent-background-color: #f5f5f4;
+  --rdp-today-color: #1c1917;
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+  --rdp-day_button-height: 36px;
+  --rdp-day_button-width: 36px;
+  --rdp-selected-border: 2px solid #1c1917;
+}
+
+.booking-calendar .rdp-selected .rdp-day_button {
+  background: #1c1917;
+  color: #fff;
+}
+
+.booking-calendar .rdp-caption_label {
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}

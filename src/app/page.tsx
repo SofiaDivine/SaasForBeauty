@@ -8,8 +8,7 @@ export default function HomePage() {
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">Стрічка</h1>
         <p className="max-w-2xl text-stone-600">
-          Горизонтальні добірки за типом пропозиції і вертикальна стрічка, де пост у
-          центрі екрана лишається у фокусі.
+          Горизонтальні добірки за типом пропозиції і вертикальна стрічка оголошень.
         </p>
       </header>
       <div className="space-y-8">

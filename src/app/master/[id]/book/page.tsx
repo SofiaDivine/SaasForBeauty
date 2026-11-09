@@ -56,7 +56,10 @@ async function BookingContent({
     };
     return [notice];
   });
-  const services = (master?.services ?? []).filter(isPaidService).map((service) => {
+  const requestedPost = (master?.posts ?? []).find((post) => post.id === requestedPostId);
+  const services = (master?.services ?? [])
+    .filter((service) => isPaidService(service) || service.isTfp)
+    .map((service) => {
     const extras = extraPostIdsForService(service.id).flatMap((postId) => {
       const post = master?.posts.find((item) => item.id === postId);
       if (!post?.content.trim()) return [];
@@ -70,6 +73,20 @@ async function BookingContent({
       return [notice];
     });
     const related = [...notices.filter((notice) => notice.serviceId === service.id), ...extras];
+    if (
+      service.isTfp &&
+      requestedPost?.type === "TFP" &&
+      requestedPost.content.trim() &&
+      !related.some((notice) => notice.postId === requestedPost.id)
+    ) {
+      related.unshift({
+        serviceId: service.id,
+        postId: requestedPost.id,
+        type: requestedPost.type,
+        title: requestedPost.title,
+        content: requestedPost.content,
+      });
+    }
     return {
       ...service,
       notices: related
@@ -77,9 +94,17 @@ async function BookingContent({
         .map(({ postId, type, title, content }) => ({ postId, type, title, content })),
     };
   });
-  const initialServiceId = services.some((service) => service.id === requestedServiceId)
-    ? requestedServiceId
-    : undefined;
+  const linkedTfpId = requestedPost ? serviceIdForPost(requestedPost.id) : undefined;
+  const tfpServiceId =
+    services.find((service) => service.id === requestedServiceId && service.isTfp)?.id ??
+    services.find((service) => service.id === linkedTfpId && service.isTfp)?.id ??
+    services.find((service) => service.isTfp)?.id;
+  const initialServiceId =
+    requestedPost?.type === "TFP"
+      ? tfpServiceId
+      : services.some((service) => service.id === requestedServiceId)
+        ? requestedServiceId
+        : undefined;
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8">

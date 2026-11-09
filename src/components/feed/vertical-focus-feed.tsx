@@ -8,6 +8,7 @@ import {
   feedCategories,
   type FeedArea,
   type FeedCategory,
+  postBookingHref,
   profileThreadHref,
   type FeedPost,
 } from "@/lib/sample-feed";
@@ -137,17 +138,27 @@ export function VerticalFocusFeed({ posts }: { posts: FeedPost[] }) {
         <ol className="space-y-4">
           {visible.map((post) => (
             <li key={post.id}>
-              <Link
-                href={profileThreadHref(post.masterId, post.id)}
-                className="block rounded-3xl border border-stone-200 bg-white p-5 transition-transform duration-150 ease-out active:scale-[0.985]"
-              >
-                <p className="text-xs text-stone-500">
-                  {post.type} · {post.location}
-                </p>
-                <h3 className="mt-2 text-xl font-semibold tracking-tight">{post.title}</h3>
-                <p className="mt-2 max-w-prose text-stone-700">{post.content}</p>
-                <p className="mt-4 text-sm font-medium">{post.masterName}</p>
-              </Link>
+              <article className="rounded-3xl border border-stone-200 bg-white p-5">
+                <Link
+                  href={profileThreadHref(post.masterId, post.id)}
+                  className="block transition-transform duration-150 ease-out active:scale-[0.985]"
+                >
+                  <p className="text-xs text-stone-500">
+                    {post.type} · {post.location}
+                  </p>
+                  <h3 className="mt-2 text-xl font-semibold tracking-tight">{post.title}</h3>
+                  <p className="mt-2 max-w-prose text-stone-700">{post.content}</p>
+                  <p className="mt-4 text-sm font-medium">{post.masterName}</p>
+                </Link>
+                {post.type === "TFP" ? (
+                  <Link
+                    href={postBookingHref(post.masterId, post.id)}
+                    className="mt-4 inline-flex rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
+                  >
+                    Записатися
+                  </Link>
+                ) : null}
+              </article>
             </li>
           ))}
         </ol>

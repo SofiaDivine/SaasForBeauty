@@ -2,12 +2,14 @@
 
 import { format, isBefore, startOfDay } from "date-fns";
 import { uk } from "date-fns/locale";
+import Link from "next/link";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   buildTimeSlots,
   formatServicePrice,
   formatSlot,
+  TFP_TIME_NOTE,
   type BookingService,
 } from "@/lib/booking";
 import { createBooking } from "@/server/create-booking";
@@ -69,6 +71,12 @@ export function BookingCalendar({
       <form action={submitBooking} className="space-y-6">
         <input type="hidden" name="masterProfileId" value={masterProfileId} />
         <input type="hidden" name="date" value={dateValue} />
+
+        {service?.isTfp ? (
+          <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+            {TFP_TIME_NOTE}
+          </p>
+        ) : null}
 
         <fieldset className="space-y-3">
           <legend className="text-sm font-semibold tracking-wide text-stone-500 uppercase">
@@ -187,7 +195,12 @@ export function BookingCalendar({
           ) : null}
           {state?.bookingId ? (
             <p role="status" className="text-sm text-stone-700">
-              Запис створено й очікує підтвердження.
+              {service?.isTfp
+                ? "Запит надіслано. Власник зв’яжеться з вами, щоб уточнити час."
+                : "Запис створено й очікує підтвердження."}{" "}
+              <Link href="/profile/me?tab=bookings" className="font-medium text-stone-900 underline">
+                Мої записи
+              </Link>
             </p>
           ) : null}
         </section>

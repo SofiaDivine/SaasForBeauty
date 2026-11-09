@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, type PointerEvent as ReactPointerEvent, type MouseEvent as ReactMouseEvent } from "react";
-import { profileThreadHref, type FeedPost } from "@/lib/sample-feed";
+import { postBookingHref, profileThreadHref, type FeedPost } from "@/lib/sample-feed";
 
 export function HorizontalCarousel({
   title,
@@ -83,18 +83,31 @@ export function HorizontalCarousel({
       >
         {posts.map((post) => (
           <li key={post.id} className="w-64 shrink-0">
-            <Link
-              href={profileThreadHref(post.masterId, post.id)}
-              draggable={false}
-              className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white"
-            >
-              <CardMedia post={post} />
-              <div className="p-4">
-                <p className="text-xs text-stone-500">{post.masterName}</p>
-                <p className="mt-2 font-medium leading-snug">{post.title}</p>
-                <p className="mt-2 line-clamp-2 text-sm text-stone-600">{post.content}</p>
-              </div>
-            </Link>
+            <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
+              <Link
+                href={profileThreadHref(post.masterId, post.id)}
+                draggable={false}
+                className="flex min-h-0 flex-1 flex-col"
+              >
+                <CardMedia post={post} />
+                <div className="p-4">
+                  <p className="text-xs text-stone-500">{post.masterName}</p>
+                  <p className="mt-2 font-medium leading-snug">{post.title}</p>
+                  <p className="mt-2 line-clamp-2 text-sm text-stone-600">{post.content}</p>
+                </div>
+              </Link>
+              {post.type === "TFP" ? (
+                <div className="px-4 pb-4">
+                  <Link
+                    href={postBookingHref(post.masterId, post.id)}
+                    draggable={false}
+                    className="inline-flex rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
+                  >
+                    Записатися
+                  </Link>
+                </div>
+              ) : null}
+            </article>
           </li>
         ))}
       </ul>

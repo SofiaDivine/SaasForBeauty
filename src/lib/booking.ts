@@ -4,6 +4,11 @@ export const SALON_OPEN_MINUTES = 9 * 60;
 export const SALON_CLOSE_MINUTES = 18 * 60;
 export const SALON_TIME_ZONE = "Europe/Kyiv";
 
+export const TFP_TIME_NOTE =
+  "Вкажіть бажаний час і дату — власник зв’яжеться з вами для уточнення.";
+
+export const TFP_VISIT_NOTE = "Бажаний час. Власник зв’яжеться з вами для уточнення.";
+
 export type ServiceNotice = {
   postId: string;
   type: "TFP" | "PROMO" | "GIVEAWAY" | "NEW_ITEM";
@@ -45,6 +50,17 @@ export function buildTimeSlots(day: Date, durationMinutes: number): Date[] {
 
 export function formatSlot(slot: Date) {
   return format(slot, "HH:mm");
+}
+
+export function formatKyivVisit(instant: Date) {
+  return new Intl.DateTimeFormat("uk-UA", {
+    timeZone: SALON_TIME_ZONE,
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(instant);
 }
 
 export function isValidSlotTime(time: string, durationMinutes: number) {

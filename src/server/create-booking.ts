@@ -4,11 +4,8 @@ import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { UUID_RE } from "@/lib/api";
 import { isValidSlotTime, kyivDateTime, type BookingActionState } from "@/lib/booking";
+import { getCurrentUser } from "@/lib/current-user";
 import { prisma } from "@/lib/prisma";
-
-async function currentUserId(): Promise<string | null> {
-  return null;
-}
 
 export async function createBooking(
   _previous: BookingActionState,
@@ -31,8 +28,8 @@ export async function createBooking(
     return { error: "Ця година вже минула." };
   }
 
-  const userId = await currentUserId();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return { error: "Увійдіть, щоб підтвердити запис." };
   }
 
@@ -62,7 +59,7 @@ export async function createBooking(
 
     const booking = await prisma.booking.create({
       data: {
-        userId,
+        userId: user.id,
         masterProfileId,
         serviceId,
         dateTime,

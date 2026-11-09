@@ -3,6 +3,7 @@
 import type { GridLayout, PostType } from "@prisma/client";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
+import { SavePostButton } from "@/components/master/save-post-button";
 
 export type MasterFeedPost = {
   id: string;
@@ -237,7 +238,15 @@ function TypeBadge({ type }: { type: PostType }) {
   );
 }
 
-function PostModal({ post, onClose }: { post: MasterFeedPost; onClose: () => void }) {
+function PostModal({
+  post,
+  saved,
+  onClose,
+}: {
+  post: MasterFeedPost;
+  saved: boolean;
+  onClose: () => void;
+}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const description = post.content?.trim() ?? "";
@@ -279,6 +288,7 @@ function PostModal({ post, onClose }: { post: MasterFeedPost; onClose: () => voi
             </button>
           </div>
           {description ? <p className="text-stone-700">{description}</p> : null}
+          <SavePostButton postId={post.id} saved={saved} />
           {post.bookingHref ? (
             <Link
               href={post.bookingHref}
@@ -344,12 +354,10 @@ function ThreadsFeed({
   posts,
   savedIds,
   focusPostId,
-  onToggleSave,
 }: {
   posts: MasterFeedPost[];
   savedIds: string[];
   focusPostId?: string;
-  onToggleSave: (id: string) => void;
 }) {
   const ordered = focusPostId
     ? [
@@ -388,19 +396,8 @@ function ThreadsFeed({
                     <MediaCarousel urls={post.mediaUrls} label={post.title} variant="strip" />
                   </div>
                 ) : null}
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    aria-pressed={saved}
-                    onClick={() => onToggleSave(post.id)}
-                    className={`rounded-full border px-4 py-2 text-sm ${
-                      saved
-                        ? "border-stone-900 bg-stone-100 text-stone-900"
-                        : "border-stone-300 bg-white text-stone-800"
-                    }`}
-                  >
-                    {saved ? "Збережено" : "Зберегти"}
-                  </button>
+                <div className="mt-3 flex flex-wrap items-start gap-2">
+                  <SavePostButton postId={post.id} saved={saved} />
                   {post.bookingHref ? (
                     <Link
                       href={post.bookingHref}
@@ -423,13 +420,14 @@ export function MasterFeed({
   posts,
   gridLayout,
   focusPostId,
+  savedIds = [],
 }: {
   posts: MasterFeedPost[];
   gridLayout: GridLayout;
   focusPostId?: string;
+  savedIds?: string[];
 }) {
   const [active, setActive] = useState<MasterFeedPost | null>(null);
-  const [savedIds, setSavedIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (!focusPostId || gridLayout !== "THREADS_FEED") return;
@@ -438,12 +436,6 @@ export function MasterFeed({
     post.scrollIntoView({ block: "center" });
     post.focus({ preventScroll: true });
   }, [focusPostId, gridLayout]);
-
-  function toggleSave(id: string) {
-    setSavedIds((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
-    );
-  }
 
   if (posts.length === 0) {
     return <p className="text-sm text-stone-600">У майстра ще немає постів.</p>;
@@ -454,14 +446,16 @@ export function MasterFeed({
       {gridLayout === "INSTAGRAM_GRID" ? (
         <InstagramGrid posts={posts} onOpen={setActive} />
       ) : (
-        <ThreadsFeed
-          posts={posts}
-          savedIds={savedIds}
-          focusPostId={focusPostId}
-          onToggleSave={toggleSave}
-        />
+        <ThreadsFeed posts={posts} savedIds={savedIds} focusPostId={focusPostId} />
       )}
-      {active ? <PostModal key={active.id} post={active} onClose={() => setActive(null)} /> : null}
+      {active ? (
+        <PostModal
+          key={active.id}
+          post={active}
+          saved={savedIds.includes(active.id)}
+          onClose={() => setActive(null)}
+        />
+      ) : null}
     </section>
   );
 }

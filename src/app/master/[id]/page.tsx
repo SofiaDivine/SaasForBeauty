@@ -5,6 +5,7 @@ import { MasterFeed, type MasterFeedPost } from "@/components/master/MasterFeed"
 import { isPaidService } from "@/lib/booking";
 import { serviceIdForPost } from "@/lib/catalog";
 import { loadMaster } from "@/lib/load-catalog";
+import { savedPostIdsFor } from "@/lib/saved-posts";
 import { nicheLabel, serviceBookingHref } from "@/lib/sample-feed";
 
 export const metadata: Metadata = {
@@ -44,15 +45,21 @@ async function MasterProfileContent({
   const masterName = master?.name ?? "Майстер";
   const posts: MasterFeedPost[] = (master?.posts ?? []).map((post) => {
     const serviceId = serviceIdForPost(post.id);
-    const service = master?.services.find((item) => item.id === serviceId);
+    const linked = master?.services.find((item) => item.id === serviceId);
+    const tfpService = linked?.isTfp
+      ? linked
+      : master?.services.find((item) => item.isTfp);
+    const bookable =
+      post.type === "TFP" ? tfpService : linked && isPaidService(linked) ? linked : undefined;
     return {
       ...post,
       masterId: id,
       masterName,
       masterAvatarUrl: master?.avatarUrl || null,
-      bookingHref:
-        service && isPaidService(service)
-          ? serviceBookingHref(id, service.id, post.id)
+      bookingHref: bookable
+        ? serviceBookingHref(id, bookable.id, post.id)
+        : post.type === "TFP"
+          ? `/master/${id}/book?post=${post.id}`
           : undefined,
     };
   });
@@ -94,7 +101,12 @@ async function MasterProfileContent({
         </Link>
       </div>
 
-      <MasterFeed posts={posts} gridLayout={gridLayout} focusPostId={focusPostId} />
+      <MasterFeed
+        posts={posts}
+        gridLayout={gridLayout}
+        focusPostId={focusPostId}
+        savedIds={await savedPostIdsFor(posts.map((post) => post.id))}
+      />
     </main>
   );
 }

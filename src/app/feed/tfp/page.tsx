@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { loadFeedPosts } from "@/lib/load-catalog";
-import { profileThreadHref } from "@/lib/sample-feed";
+import { postBookingHref, profileThreadHref } from "@/lib/sample-feed";
 
 export const metadata: Metadata = {
   title: "TFP · TFP-Bundle",
@@ -36,12 +36,20 @@ async function TfpContent() {
               </p>
               <h2 className="mt-2 text-xl font-semibold tracking-tight">{post.title}</h2>
               <p className="mt-2 text-stone-700">{post.content}</p>
-              <Link
-                href={profileThreadHref(post.masterId, post.id)}
-                className="mt-4 inline-block text-sm font-medium underline-offset-4 hover:underline"
-              >
-                Відкрити у стрічці
-              </Link>
+              <div className="mt-4 flex flex-wrap items-center gap-3">
+                <Link
+                  href={postBookingHref(post.masterId, post.id)}
+                  className="rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
+                >
+                  Записатися
+                </Link>
+                <Link
+                  href={profileThreadHref(post.masterId, post.id)}
+                  className="text-sm font-medium underline-offset-4 hover:underline"
+                >
+                  Відкрити у стрічці
+                </Link>
+              </div>
             </article>
           </li>
         ))}

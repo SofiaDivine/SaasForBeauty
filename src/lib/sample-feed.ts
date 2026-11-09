@@ -88,6 +88,11 @@ export function serviceBookingHref(masterId: string, serviceId: string, postId?:
   return `/master/${masterId}/book?${params.toString()}`;
 }
 
+export function postBookingHref(masterId: string, postId: string) {
+  const params = new URLSearchParams({ post: postId });
+  return `/master/${masterId}/book?${params.toString()}`;
+}
+
 export function mediaKindOf(url: string): "image" | "video" {
   const path = url.split(/[?#]/)[0] ?? url;
   return /\.(mp4|webm|mov|m4v|ogv)$/i.test(path) ? "video" : "image";

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthForm } from "@/components/auth/auth-form";
+import { GoogleSignIn } from "@/components/auth/google-sign-in";
 
 export const metadata: Metadata = {
   title: "Реєстрація · TFP-Bundle",
@@ -12,9 +13,10 @@ export default function RegisterPage() {
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight">Реєстрація</h1>
         <p className="text-sm text-stone-600">
-          Звичайний профіль або профіль майстра.
+          Найшвидше — через Google-пошту. Профіль створиться під час першого входу.
         </p>
       </header>
+      <GoogleSignIn label="Зареєструватися через Google" />
       <AuthForm>
         <label className="block space-y-1 text-sm">
           <span>Ім&apos;я</span>

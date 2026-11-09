@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
+import { getSession } from "@/lib/session";
 
 const links = [
   { href: "/", label: "Стрічка" },
   { href: "/feed/tfp", label: "TFP" },
-  { href: "/profile/me", label: "Мій профіль" },
-  { href: "/login", label: "Увійти" },
 ];
 
 export function SiteHeader() {
@@ -20,8 +21,34 @@ export function SiteHeader() {
               {link.label}
             </Link>
           ))}
+          <Suspense fallback={<span className="inline-block h-4 w-14 rounded bg-stone-200" aria-hidden />}>
+            <AccountLink />
+          </Suspense>
         </nav>
       </div>
     </header>
+  );
+}
+
+async function AccountLink() {
+  const session = await getSession();
+
+  if (!session?.user) {
+    return (
+      <Link href="/login" className="hover:text-stone-900">
+        Увійти
+      </Link>
+    );
+  }
+
+  const label = session.user.name ?? session.user.email ?? "Мій профіль";
+
+  return (
+    <>
+      <Link href="/profile/me" className="hover:text-stone-900">
+        {label}
+      </Link>
+      <SignOutButton />
+    </>
   );
 }

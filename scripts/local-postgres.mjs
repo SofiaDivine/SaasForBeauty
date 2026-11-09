@@ -37,6 +37,24 @@ if (!fs.existsSync(ready)) {
   await pg.initialise();
 }
 
+const pidFile = path.join(databaseDir, "postmaster.pid");
+if (fs.existsSync(pidFile)) {
+  const pid = Number(fs.readFileSync(pidFile, "utf8").split(/\r?\n/, 1)[0]);
+  let alive = false;
+  if (pid) {
+    try {
+      process.kill(pid, 0);
+      alive = true;
+    } catch {
+      alive = false;
+    }
+  }
+  if (!alive) {
+    fs.rmSync(pidFile, { force: true });
+    console.log("Removed a stale Postgres lock from the previous run.");
+  }
+}
+
 await pg.start();
 
 try {

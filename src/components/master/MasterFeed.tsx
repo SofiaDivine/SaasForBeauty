@@ -13,6 +13,7 @@ export type MasterFeedPost = {
   masterId: string;
   masterName: string;
   masterAvatarUrl: string | null;
+  bookingHref?: string;
 };
 
 const postTypeLabel: Record<PostType, string> = {
@@ -278,12 +279,14 @@ function PostModal({ post, onClose }: { post: MasterFeedPost; onClose: () => voi
             </button>
           </div>
           {description ? <p className="text-stone-700">{description}</p> : null}
-          <Link
-            href={`/master/${post.masterId}/book`}
-            className="mt-auto inline-flex w-fit rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
-          >
-            Записатися
-          </Link>
+          {post.bookingHref ? (
+            <Link
+              href={post.bookingHref}
+              className="mt-auto inline-flex w-fit rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
+            >
+              Записатися
+            </Link>
+          ) : null}
         </div>
       </div>
     </dialog>
@@ -340,20 +343,36 @@ function InstagramGrid({
 function ThreadsFeed({
   posts,
   savedIds,
+  focusPostId,
   onToggleSave,
 }: {
   posts: MasterFeedPost[];
   savedIds: string[];
+  focusPostId?: string;
   onToggleSave: (id: string) => void;
 }) {
+  const ordered = focusPostId
+    ? [
+        ...posts.filter((post) => post.id === focusPostId),
+        ...posts.filter((post) => post.id !== focusPostId),
+      ]
+    : posts;
+
   return (
     <ol className="mx-auto w-full max-w-xl space-y-4">
-      {posts.map((post) => {
+      {ordered.map((post) => {
         const saved = savedIds.includes(post.id);
         const text = post.content?.trim() || post.title;
+        const focused = post.id === focusPostId;
         return (
           <li key={post.id}>
-            <article className="flex gap-3 rounded-3xl border border-stone-200 bg-white p-4">
+            <article
+              id={`post-${post.id}`}
+              tabIndex={focused ? -1 : undefined}
+              className={`flex scroll-mt-24 gap-3 rounded-3xl border bg-white p-4 ${
+                focused ? "border-stone-900 ring-2 ring-stone-900" : "border-stone-200"
+              }`}
+            >
               <Avatar name={post.masterName} url={post.masterAvatarUrl} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
@@ -382,12 +401,14 @@ function ThreadsFeed({
                   >
                     {saved ? "Збережено" : "Зберегти"}
                   </button>
-                  <Link
-                    href={`/master/${post.masterId}/book`}
-                    className="rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
-                  >
-                    Записатися
-                  </Link>
+                  {post.bookingHref ? (
+                    <Link
+                      href={post.bookingHref}
+                      className="rounded-full bg-stone-900 px-4 py-2 text-sm text-white"
+                    >
+                      Записатися
+                    </Link>
+                  ) : null}
                 </div>
               </div>
             </article>
@@ -401,12 +422,22 @@ function ThreadsFeed({
 export function MasterFeed({
   posts,
   gridLayout,
+  focusPostId,
 }: {
   posts: MasterFeedPost[];
   gridLayout: GridLayout;
+  focusPostId?: string;
 }) {
   const [active, setActive] = useState<MasterFeedPost | null>(null);
   const [savedIds, setSavedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!focusPostId || gridLayout !== "THREADS_FEED") return;
+    const post = document.getElementById(`post-${focusPostId}`);
+    if (!(post instanceof HTMLElement)) return;
+    post.scrollIntoView({ block: "center" });
+    post.focus({ preventScroll: true });
+  }, [focusPostId, gridLayout]);
 
   function toggleSave(id: string) {
     setSavedIds((current) =>
@@ -423,7 +454,12 @@ export function MasterFeed({
       {gridLayout === "INSTAGRAM_GRID" ? (
         <InstagramGrid posts={posts} onOpen={setActive} />
       ) : (
-        <ThreadsFeed posts={posts} savedIds={savedIds} onToggleSave={toggleSave} />
+        <ThreadsFeed
+          posts={posts}
+          savedIds={savedIds}
+          focusPostId={focusPostId}
+          onToggleSave={toggleSave}
+        />
       )}
       {active ? <PostModal key={active.id} post={active} onClose={() => setActive(null)} /> : null}
     </section>

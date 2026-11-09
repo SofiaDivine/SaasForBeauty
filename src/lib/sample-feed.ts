@@ -77,6 +77,17 @@ export const nicheLabel: Record<FeedCategory, string> = {
   CRAFT: "Рукоділля",
 };
 
+export function profileThreadHref(masterId: string, postId: string) {
+  const params = new URLSearchParams({ view: "threads", post: postId });
+  return `/master/${masterId}?${params.toString()}`;
+}
+
+export function serviceBookingHref(masterId: string, serviceId: string, postId?: string) {
+  const params = new URLSearchParams({ service: serviceId });
+  if (postId) params.set("post", postId);
+  return `/master/${masterId}/book?${params.toString()}`;
+}
+
 export function mediaKindOf(url: string): "image" | "video" {
   const path = url.split(/[?#]/)[0] ?? url;
   return /\.(mp4|webm|mov|m4v|ogv)$/i.test(path) ? "video" : "image";

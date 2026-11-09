@@ -15,12 +15,14 @@ import { createBooking } from "@/server/create-booking";
 export function BookingCalendar({
   masterProfileId,
   services,
+  initialServiceId,
 }: {
   masterProfileId: string;
   services: BookingService[];
+  initialServiceId?: string;
 }) {
   const [date, setDate] = useState<Date | undefined>();
-  const [serviceId, setServiceId] = useState("");
+  const [serviceId, setServiceId] = useState(initialServiceId ?? "");
   const [time, setTime] = useState("");
   const [now, setNow] = useState<Date | null>(null);
   const [state, submitBooking, pending] = useActionState(createBooking, null);
@@ -30,6 +32,7 @@ export function BookingCalendar({
   }, []);
 
   const service = services.find((item) => item.id === serviceId);
+  const notice = service?.notices[0];
   const slots = useMemo(() => {
     if (!date || !service || !now) return [];
     return buildTimeSlots(date, service.durationMinutes).filter(
@@ -101,6 +104,12 @@ export function BookingCalendar({
                       <span className={`mt-1 block text-sm ${selected ? "text-stone-200" : "text-stone-600"}`}>
                         {item.durationMinutes} хв · {formatServicePrice(item)}
                       </span>
+                      {selected && notice ? (
+                        <span className={`mt-3 block border-t pt-3 text-sm ${selected ? "border-white/20 text-stone-100" : "border-stone-200 text-stone-700"}`}>
+                          <span className="block font-medium">{notice.title}</span>
+                          <span className="mt-1 block font-normal">{notice.content}</span>
+                        </span>
+                      ) : null}
                     </label>
                   </li>
                 );

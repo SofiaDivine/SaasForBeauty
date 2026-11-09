@@ -4,12 +4,20 @@ export const SALON_OPEN_MINUTES = 9 * 60;
 export const SALON_CLOSE_MINUTES = 18 * 60;
 export const SALON_TIME_ZONE = "Europe/Kyiv";
 
+export type ServiceNotice = {
+  postId: string;
+  type: "TFP" | "PROMO" | "GIVEAWAY" | "NEW_ITEM";
+  title: string;
+  content: string;
+};
+
 export type BookingService = {
   id: string;
   title: string;
   durationMinutes: number;
   price: string;
   isTfp: boolean;
+  notices: ServiceNotice[];
 };
 
 export type BookingActionState = {
@@ -42,6 +50,12 @@ export function formatSlot(slot: Date) {
 export function isValidSlotTime(time: string, durationMinutes: number) {
   const anchor = new Date(2026, 0, 1);
   return buildTimeSlots(anchor, durationMinutes).some((slot) => formatSlot(slot) === time);
+}
+
+export function isPaidService(service: Pick<BookingService, "price" | "isTfp">) {
+  if (service.isTfp) return false;
+  const amount = Number(service.price);
+  return Number.isFinite(amount) && amount > 0;
 }
 
 export function formatServicePrice(service: Pick<BookingService, "price" | "isTfp">) {

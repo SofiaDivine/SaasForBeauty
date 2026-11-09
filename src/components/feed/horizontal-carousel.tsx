@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRef, type PointerEvent as ReactPointerEvent, type MouseEvent as ReactMouseEvent } from "react";
-import type { FeedPost } from "@/lib/sample-feed";
+import { profileThreadHref, type FeedPost } from "@/lib/sample-feed";
 
 export function HorizontalCarousel({
   title,
@@ -84,7 +84,7 @@ export function HorizontalCarousel({
         {posts.map((post) => (
           <li key={post.id} className="w-64 shrink-0">
             <Link
-              href={`/master/${post.masterId}/book`}
+              href={profileThreadHref(post.masterId, post.id)}
               draggable={false}
               className="flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white"
             >

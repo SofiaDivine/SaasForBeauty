@@ -8,6 +8,7 @@ import {
   feedCategories,
   type FeedArea,
   type FeedCategory,
+  profileThreadHref,
   type FeedPost,
 } from "@/lib/sample-feed";
 
@@ -137,7 +138,7 @@ export function VerticalFocusFeed({ posts }: { posts: FeedPost[] }) {
           {visible.map((post) => (
             <li key={post.id}>
               <Link
-                href={`/master/${post.masterId}`}
+                href={profileThreadHref(post.masterId, post.id)}
                 className="block rounded-3xl border border-stone-200 bg-white p-5 transition-transform duration-150 ease-out active:scale-[0.985]"
               >
                 <p className="text-xs text-stone-500">

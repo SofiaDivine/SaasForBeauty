@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TFP-Bundle
 
-## Getting Started
+[English](README.en.md)
 
-First, run the development server:
+Стрічка оголошень для б'юті-майстрів, фотографів, відеографів і локальних пропозицій. Тут збираються зйомки за TFP, акції, розіграші та новинки: макіяж, манікюр, волосся, одяг, грумінг, кав'ярні й рукоділля.
+
+Картки в стрічці демонстраційні. Їх можна гортати без облікового запису. Вхід потрібен, щоб зберегти оголошення, підписатися на майстра або залишити запис на послугу.
+
+## Подивитися
+
+Відкрийте [https://tfp-bundle.vercel.app](https://tfp-bundle.vercel.app).
+
+На головній сторінці є горизонтальні добірки за типом пропозиції і вертикальна стрічка. З картки можна перейти в профіль майстра або на сторінку запису. Окрема добірка TFP: [https://tfp-bundle.vercel.app/feed/tfp](https://tfp-bundle.vercel.app/feed/tfp).
+
+## Запустити локально
+
+Потрібні Node.js 20+ і npm.
+
+```bash
+npm install
+```
+
+Скопіюйте `.env.example` у `.env` і заповніть значення. Файл `.env` у git не потрапляє.
+
+- `DATABASE_URL` і `DIRECT_URL` — підключення до спільної бази Supabase. Рядки з паролем візьміть у власника проєкту, не комітьте їх.
+- `AUTH_SECRET` — секрет сесії. Згенерувати: `npx auth secret`.
+- `AUTH_GOOGLE_ID` і `AUTH_GOOGLE_SECRET` — клієнт OAuth з Google Cloud.
+- `AUTH_URL` для локального запуску: `http://localhost:3000`.
+
+У Google Cloud, у клієнті типу Web application, у списку Authorized redirect URIs мають бути обидві адреси:
+
+```text
+http://localhost:3000/api/auth/callback/google
+https://tfp-bundle.vercel.app/api/auth/callback/google
+```
+
+Запуск:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Сайт відкриється на [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Вхід
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Обліковий запис створюється під час першого входу через Google. Форма з поштою і паролем на сторінці реєстрації запис не зберігає.
 
-## Learn More
+Застосунок Google ще не опублікований: сторінка Branding не дає натиснути Publish app. Поки статус лишається Testing, увійти може лише пошта зі списку Test users. На `localhost` тестова пошта входить. На адресі Vercel інша, не тестова пошта отримає відмову Google, навіть якщо redirect URI уже доданий.
 
-To learn more about Next.js, take a look at the following resources:
+Щоб додати людину зараз: Google Cloud, сторінка Audience, блок Test users, Add users. Після публікації застосунку цей список більше не обмежуватиме вхід.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Що є в інтерфейсі
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Стрічка: TFP, акції, розіграші, новинки. Є фото і коротке відео.
+- Профіль майстра: послуги, сітка або стрічка постів, місто і напрям.
+- Запис на послугу з календарем. Статуси візиту: очікує, підтверджено, скасовано.
+- Профіль користувача: підписки, збережені пости і свої записи. Сторінка доступна лише після входу.

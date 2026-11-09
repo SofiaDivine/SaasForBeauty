@@ -65,6 +65,7 @@ model MasterProfile {
   profileType ProfileType
   gridLayout  GridLayout  @default(INSTAGRAM_GRID)
   location    String?
+  niche       String
   rating      Decimal     @default(0) @db.Decimal(3, 2)
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)

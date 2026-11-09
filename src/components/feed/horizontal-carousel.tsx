@@ -126,6 +126,11 @@ function CardMedia({ post }: { post: FeedPost }) {
   }
 
   return (
-    <img src={post.mediaUrl} alt="" draggable={false} className="aspect-[4/3] w-full object-cover" />
+    <img
+      src={post.mediaUrl}
+      alt={post.title}
+      draggable={false}
+      className="aspect-[4/3] w-full object-cover"
+    />
   );
 }

@@ -1,20 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { samplePosts } from "@/lib/sample-feed";
+import { Suspense } from "react";
+import { loadFeedPosts } from "@/lib/load-catalog";
 
 export const metadata: Metadata = {
   title: "TFP · TFP-Bundle",
 };
 
 export default function TfpFeedPage() {
-  const posts = samplePosts.filter((post) => post.type === "TFP");
+  return (
+    <Suspense fallback={<p className="px-4 py-8 text-sm text-stone-600">Завантажуємо TFP…</p>}>
+      <TfpContent />
+    </Suspense>
+  );
+}
+
+async function TfpContent() {
+  const posts = (await loadFeedPosts()).filter((post) => post.type === "TFP");
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-8">
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight">TFP</h1>
         <p className="text-stone-600">
-          Окремі пропозиції співпраці за фото: модель і майстер обмінюються часом, без оплати послуги.
+          Окремі пропозиції співпраці: модель і майстер обмінюються часом, без оплати послуги.
         </p>
       </header>
       <ol className="space-y-4">
@@ -30,7 +39,7 @@ export default function TfpFeedPage() {
                 href={`/master/${post.masterId}`}
                 className="mt-4 inline-block text-sm font-medium underline-offset-4 hover:underline"
               >
-                Профіль майстра
+                Профіль
               </Link>
             </article>
           </li>

@@ -2,64 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { BookingCalendar } from "@/components/booking/BookingCalendar";
-import type { BookingService } from "@/lib/booking";
-import { prisma } from "@/lib/prisma";
+import { loadMaster } from "@/lib/load-catalog";
 
 export const metadata: Metadata = {
   title: "Запис · TFP-Bundle",
 };
 
-const previewServices: BookingService[] = [
-  {
-    id: "00000000-0000-4000-8000-000000000101",
-    title: "Стрижка",
-    durationMinutes: 60,
-    price: "900",
-    isTfp: false,
-  },
-  {
-    id: "00000000-0000-4000-8000-000000000102",
-    title: "Фарбування",
-    durationMinutes: 150,
-    price: "2400",
-    isTfp: false,
-  },
-  {
-    id: "00000000-0000-4000-8000-000000000103",
-    title: "TFP-зйомка",
-    durationMinutes: 120,
-    price: "0",
-    isTfp: true,
-  },
-];
-
-function databaseIsRemote() {
-  const url = process.env.DATABASE_URL ?? "";
-  return url.length > 0 && !url.includes("localhost") && !url.includes("127.0.0.1");
-}
-
 async function loadServices(masterProfileId: string) {
-  if (!databaseIsRemote()) return previewServices;
-
-  const rows = await prisma.service.findMany({
-    where: { masterProfileId },
-    orderBy: { title: "asc" },
-    select: {
-      id: true,
-      title: true,
-      durationMinutes: true,
-      price: true,
-      isTfp: true,
-    },
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    durationMinutes: row.durationMinutes,
-    price: row.price.toString(),
-    isTfp: row.isTfp,
-  }));
+  const master = await loadMaster(masterProfileId);
+  return master?.services ?? [];
 }
 
 export default function MasterBookingPage({
